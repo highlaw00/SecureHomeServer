@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  java:
+    platform: linux/x86_64
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: SecureHomeServer
+    ports:
+      - "8080:8080"
+    networks:
+      - local-test
+
+  db:
+    platform: linux/x86_64
+    image: mysql:8.0
+    container_name: SecureHomeDB
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testdb
+    command: [
+      '--default-authentication-plugin=mysql_native_password',
+      '--lower-case-table-names=1'
+    ]
+    volumes:
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    restart: always
+    healthcheck:
+      test: [ "CMD", "mysql", "-h", "localhost", "-P", "3306", "-u", "root", "--password=root", "-e", "select 1", "testdb" ]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    networks:
+      - local-test
+
+networks:
+  local-test:

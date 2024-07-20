@@ -30,9 +30,9 @@ public class SecureHomeUserDetails implements UserDetailsService {
             userName = member.get(0).getName();
             password = member.get(0).getPassword();
             authorities = new ArrayList<>();
-            authorities.add(new SimpleGrantedAuthority(member.get(0).getRole()));
+            authorities.add(new SimpleGrantedAuthority(member.get(0).getRole().toString()));
         }
 
-        return new User(username, password, authorities);
+        return new User(userName, password, authorities);
     }
 }
